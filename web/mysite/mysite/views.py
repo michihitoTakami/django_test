@@ -1,18 +1,13 @@
 # mysite/views.py
 import json
 import requests
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from .models import AiAnalysisLog
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import AiAnalysisLog
 from .serializers import AiAnalysisLogSerializer
 from datetime import datetime
-from django.utils import timezone
 
 class AiAnalysisView(APIView):
     def post(self, request, *args, **kwargs):
@@ -44,9 +39,9 @@ class AiAnalysisView(APIView):
         log.save()
 
         if response_data.get('success'):
-            return Response(response_data, status=status.HTTP_200_OK)
+            return Response({'status': 'success'}, status=status.HTTP_200_OK)
         else:
-            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'status': 'failed', 'message': response_data.get('message') }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 	
 class AiAnalysisLogView(APIView):
     def get(self, request, *args, **kwargs):
