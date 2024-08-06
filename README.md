@@ -25,7 +25,7 @@ curl -X POST http://localhost:8000/ai_analysis/ -H "Content-Type: application/js
 
 ### データの確認方法
 ```:shell
-curl -X GET http://127.0.0.1:8000/ai_analysis_logs/?date=20240807
+curl -X GET http://localhost:8000/ai_analysis_logs/?date=20240807
 ```
 data=%Y%m%dの形式で付与します。
 パラメータがない場合は本日の日付のデータを返します。
