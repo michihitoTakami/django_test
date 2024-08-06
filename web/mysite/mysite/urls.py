@@ -16,12 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import ai_analysis
+from .views import AiAnalysisView
 from .views import AiAnalysisLogView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ai_analysis/', ai_analysis, name='ai_analysis'),
+    path('ai_analysis/', AiAnalysisView.as_view(), name='ai_analysis'),
     path('ai_analysis_logs/', AiAnalysisLogView.as_view(), name='ai_analysis_logs'),
 
 ]

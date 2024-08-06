@@ -14,42 +14,39 @@ from .serializers import AiAnalysisLogSerializer
 from datetime import datetime
 from django.utils import timezone
 
-@csrf_exempt
-def ai_analysis(request):
-	if request.method == 'POST':
-		try:
-			data = json.loads(request.body)
-		except json.JSONDecodeError:
-			return JsonResponse({'error': 'Invalid JSON'}, status=400)
+class AiAnalysisView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return Response({'error': 'Invalid JSON'}, status=status.HTTP_400_BAD_REQUEST)
 
-		image_path = data.get('image_path')
+        image_path = data.get('image_path')
 
-		if not image_path:
-			return JsonResponse({'error': 'image_path is required'}, status=400)
+        if not image_path:
+            return Response({'error': 'image_path is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-		request_timestamp = timezone.now()
+        request_timestamp = timezone.now()
 
-		response = requests.post('http://mock_server:5000', json={'image_path': image_path})
-		response_data = response.json()
-		response_timestamp = timezone.now()
+        response = requests.post('http://mock_server:5000', json={'image_path': image_path})
+        response_data = response.json()
+        response_timestamp = timezone.now()
 
-		log = AiAnalysisLog(
-			image_path=image_path,
-			success=response_data.get('success'),
-			message=response_data.get('message'),
-			class_field=response_data.get('estimated_data', {}).get('class'),
-			confidence=response_data.get('estimated_data', {}).get('confidence'),
-			request_timestamp=request_timestamp,
-			response_timestamp=response_timestamp
-		)
-		log.save()
+        log = AiAnalysisLog(
+            image_path=image_path,
+            success=response_data.get('success'),
+            message=response_data.get('message'),
+            class_field=response_data.get('estimated_data', {}).get('class'),
+            confidence=response_data.get('estimated_data', {}).get('confidence'),
+            request_timestamp=request_timestamp,
+            response_timestamp=response_timestamp
+        )
+        log.save()
 
-		if response_data.get('success'):
-			return JsonResponse(response_data, status=200)
-		else:
-			return JsonResponse(response_data, status=500)
-	else:
-		return JsonResponse({'error': 'Invalid request method'}, status=405)
+        if response_data.get('success'):
+            return Response(response_data, status=status.HTTP_200_OK)
+        else:
+            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 	
 class AiAnalysisLogView(APIView):
     def get(self, request, *args, **kwargs):
