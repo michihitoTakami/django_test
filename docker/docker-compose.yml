@@ -1,0 +1,50 @@
+version: '3'
+services:
+  db:
+    container_name: mysql
+    image: mysql:8.0
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      TZ: 'Asia/Tokyo'
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: 'mysite_development'
+      MYSQL_USER: 'django'
+      MYSQL_PASSWORD: 'django'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+      MYSQL_RANDOM_ROOT_PASSWORD: 'true'
+    privileged: true
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+  mysite:
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - '../web:/mysite'
+    ports:
+      - "8000:8000"
+    container_name: docker_mysite
+    tty: true 
+    working_dir: '/mysite'
+    depends_on:
+      db:
+        condition: service_healthy
+    command:
+      - /bin/bash
+      - -c
+      - |
+        cd mysite
+        python manage.py makemigrations
+        python manage.py migrate
+        python manage.py runserver 0.0.0.0:8000
+  mock_server:
+    build:
+      context: ../mock_server
+    ports:
+      - "5000:5000"
+    container_name: mock_server
