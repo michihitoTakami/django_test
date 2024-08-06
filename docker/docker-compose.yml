@@ -12,14 +12,13 @@ services:
       MYSQL_DATABASE: 'mysite_development'
       MYSQL_USER: 'django'
       MYSQL_PASSWORD: 'django'
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
-      MYSQL_RANDOM_ROOT_PASSWORD: 'true'
     privileged: true
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 1s
       timeout: 3s
       retries: 30
+    command: --default-time-zone='Asia/Tokyo'
   mysite:
     build:
       context: ../
