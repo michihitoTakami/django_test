@@ -9,8 +9,9 @@ docker compose up
 ```
 
 ### 注意点
-- 初回の`docker compose up`でエラーになるかもしれません。
-- 一度`docker compose stop`等で落としてもらって、再度upしてみてください。多分上手く行きます。
+- 初回の`docker compose up`でエラーになります
+  - 初回はDBのCREATEが行われるが、作られる前にDjangoがDBを読みに行ってしまう為。
+- MySQLコンテナが立ち上がった後、一度`docker compose stop`等で落としてもらって、再度`docker compose up`してみてください。多分上手く行きます。
 
 ## 使い方
 ### 成功用
@@ -35,7 +36,14 @@ data=%Y%m%dの形式で付与します。
 - `/ai_analysis/`のレスポンスが遅いですが、わざと5秒のディレイを入れています。
   - ※requestとresponseの時間の差分を明確にする為
 
-### 各種コメント
+## 後片付け
+```:shell
+cd docker
+docker compose down --rmi all --volume
+docker volume prune
+``` 
+
+## 各種コメント
 
 - Djangoはじめ、Pythonのフレームワーク初心者ですのでお作法がなっていない等、いろいろあるかもしれませんが、ご容赦ください。
 - 一応、静的解析ツールとしてRuffを入れてみました。仕様とかは勉強中で、とりあえず導入したレベルです。
